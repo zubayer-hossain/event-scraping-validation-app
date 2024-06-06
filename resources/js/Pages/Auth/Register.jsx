@@ -4,6 +4,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
+import SelectInput from '@/Components/SelectInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Register() {
@@ -12,6 +13,7 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
+        role: '',
     });
 
     useEffect(() => {
@@ -22,9 +24,14 @@ export default function Register() {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('register'));
     };
+
+    const roleOptions = [
+        { value: '', text: 'Select a role', disabled: true },
+        { value: 'author', text: 'Author' },
+        { value: 'client', text: 'Client' },
+    ];
 
     return (
         <GuestLayout>
@@ -97,6 +104,22 @@ export default function Register() {
                     />
 
                     <InputError message={errors.password_confirmation} className="mt-2" />
+                </div>
+
+                <div className="mt-4">
+                    <InputLabel htmlFor="role" value="Role" />
+
+                    <SelectInput
+                        id="role"
+                        name="role"
+                        value={data.role}
+                        className="mt-1 block w-full"
+                        onChange={(e) => setData('role', e.target.value)}
+                        options={roleOptions}
+                        required
+                    />
+
+                    <InputError message={errors.role} className="mt-2" />
                 </div>
 
                 <div className="flex items-center justify-end mt-4">
