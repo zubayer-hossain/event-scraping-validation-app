@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:author'])->group(function () {
+    Route::get('events/list', [EventController::class, 'list']);
     Route::resource('events', EventController::class);
     Route::resource('event-reports', EventReportController::class);
     Route::post('events/{event}/check-selectors', [EventController::class, 'checkSelectors']);

@@ -15,8 +15,13 @@ class EventController extends Controller
      */
     public function index(): Response
     {
+        return Inertia::render('Events/List');
+    }
+
+    public function list()
+    {
         $events = Event::all();
-        return Inertia::render('Events/List', compact('events'));
+        return response()->json($events);
     }
 
     /**

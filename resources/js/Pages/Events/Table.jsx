@@ -1,6 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const EventTable = ({ events }) => {
+const EventTable = () => {
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        axios.get('/events/list')
+            .then(response => {
+                setEvents(response.data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("There was an error fetching the events!", error);
+            });
+    }, []);
+
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
     return (
         <div className="container mx-auto p-4">
             <div className="flex justify-between items-center mb-4">
