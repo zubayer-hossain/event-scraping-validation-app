@@ -10,4 +10,14 @@ export default defineConfig({
         }),
         react(),
     ],
+    resolve: {
+        alias: {
+            '@': '/resources/js',
+        },
+    },
+    server: {
+        watch: {
+            usePolling: true,
+        },
+    },
 });

@@ -36,7 +36,7 @@ Route::middleware(['auth', 'role:author'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:client'])->group(function () {
-    Route::get('client-events', [ClientEventController::class, 'index']);
+   //
 });
 
 require __DIR__.'/auth.php';

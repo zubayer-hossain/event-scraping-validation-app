@@ -20,6 +20,8 @@ class Event extends Model
         'horizon_scanning' => 'boolean',
     ];
 
+    protected $appends = ['last_updated_at'];
+
     public function reports()
     {
         return $this->hasMany(EventReport::class);
@@ -27,6 +29,12 @@ class Event extends Model
 
     public function clients()
     {
-        return $this->belongsToMany(User::class, 'client_events')->withTimestamps();
+        return $this->belongsToMany(User::class, 'client_events', 'event_id', 'client_id');
+    }
+
+    public function getLastUpdatedAtAttribute()
+    {
+        $date = $this->updated_at;
+        return $date ? $date->format('g:i A, j F Y') : null;
     }
 }

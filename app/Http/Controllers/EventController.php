@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEventRequest;
+use App\Mail\ClientNotification;
 use App\Models\Event;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(): Response
     {
         return Inertia::render('Events/List');
@@ -20,92 +22,81 @@ class EventController extends Controller
 
     public function list()
     {
-        $events = Event::all();
+        $user = Auth::user();
+        if ($user->hasRole('author')) {
+            $events = Event::all();
+        } else if ($user->hasRole('client')) {
+            $events = $user->events;
+        } else {
+            $events = [];
+        }
+
         return response()->json($events);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): Response
     {
         return Inertia::render('Events/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreEventRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'url' => 'required|url',
-            'country' => 'required|string|max:255',
-            'document' => 'required|string|max:255',
-            'source_type' => 'required|string|max:255',
-            'reference_selector' => 'nullable|string|max:255',
-            'horizon_scanning' => 'required|boolean',
-            'source_selectors' => 'nullable|array',
-            'document_selectors' => 'nullable|array',
-        ]);
+        DB::beginTransaction();
 
-        $event = Event::create($request->all());
+        try {
+            $event = Event::create($request->validated());
 
-        // Assign event to a randomly selected client
-        $client = User::where('role', 'client')->inRandomOrder()->first();
-        if ($client) {
-            $event->clients()->attach($client->id, ['subscribed_at' => now()]);
-            // Send an email notification to the client using the queue (implementation required)
+            // Assign event to a randomly selected client
+            $client = User::where('role', 'client')->inRandomOrder()->first();
+            if ($client) {
+                $event->clients()->attach($client->id, ['subscribed_at' => now(), 'created_at' => now(), 'updated_at' => now()]);
+                Mail::to($client->email)->queue(new ClientNotification($event, $client));
+            }
+
+            DB::commit();
+            return redirect()->route('events.index')->with('success', 'Event created successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('events.create')->withErrors(['error' => 'An error occurred while creating the event.']);
         }
-
-        return redirect()->route('events.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Event $event): Response
     {
         return Inertia::render('Events/Show', compact('event'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Event $event): Response
     {
         return Inertia::render('Events/Edit', compact('event'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Event $event): RedirectResponse
+    public function update(StoreEventRequest $request, Event $event): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'url' => 'required|url',
-            'country' => 'required|string|max:255',
-            'document' => 'required|string|max:255',
-            'source_type' => 'required|string|max:255',
-            'reference_selector' => 'nullable|string|max:255',
-            'horizon_scanning' => 'required|boolean',
-            'source_selectors' => 'nullable|array',
-            'document_selectors' => 'nullable|array',
-        ]);
+        DB::beginTransaction();
 
-        $event->update($request->all());
-
-        return redirect()->route('events.index');
+        try {
+            $event->update($request->validated());
+            DB::commit();
+            return redirect()->route('events.index')->with('success', 'Event updated successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('events.edit', $event->id)->withErrors(['error' => 'An error occurred while updating the event.']);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Event $event): RedirectResponse
     {
-        $event->delete();
-        return redirect()->route('events.index');
+        DB::beginTransaction();
+
+        try {
+            $event->delete();
+            DB::commit();
+            return redirect()->route('events.index')->with('success', 'Event deleted successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('events.index')->withErrors(['error' => 'An error occurred while deleting the event.']);
+        }
     }
 
     public function checkSelectors(Event $event): RedirectResponse
@@ -120,3 +111,4 @@ class EventController extends Controller
         return redirect()->route('events.show', $event);
     }
 }
+

@@ -102,7 +102,7 @@ export default function Authenticated({ user, header, children }) {
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink href={route('events.index')} active={route().current('events.index')}>
-                            Dashboard
+                            Events
                         </ResponsiveNavLink>
                     </div>
 
