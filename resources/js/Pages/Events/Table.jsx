@@ -314,7 +314,8 @@ const EventTable = ({ user }) => {
                                 <h3 className="text-md font-semibold text-gray-800 mt-5">Result {currentIndex
                                                                                                  + 1} of {scrapingResults.length}</h3>
                             </div>
-                            <div className="bg-gray-100 p-2 rounded-md text-sm text-gray-800">
+                            <div className="bg-gray-100 p-2 rounded-md text-sm text-gray-800 overflow-auto"
+                                 style={{maxHeight: '300px'}}>
                                 <p><strong>Link</strong> <br/> {scrapingResults[currentIndex].source_url}</p>
                                 <p className="mt-2"><strong>Title</strong> <br/> {scrapingResults[currentIndex].title}
                                 </p>
