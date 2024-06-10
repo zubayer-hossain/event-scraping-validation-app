@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEventRequest;
+use App\Jobs\ScrapeEvent;
 use App\Mail\ClientNotification;
 use App\Models\Event;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -23,12 +25,12 @@ class EventController extends Controller
     public function list()
     {
         $user = Auth::user();
-        if ($user->hasRole('author')) {
-            $events = Event::all();
-        } else if ($user->hasRole('client')) {
+        $events = [];
+
+        if ($user->role === 'author') {
+            $events = Event::orderBy('created_at', 'desc')->get();
+        } else if ($user->role === 'client') {
             $events = $user->events;
-        } else {
-            $events = [];
         }
 
         return response()->json($events);
@@ -39,7 +41,7 @@ class EventController extends Controller
         return Inertia::render('Events/Create');
     }
 
-    public function store(StoreEventRequest $request): RedirectResponse
+    public function store(StoreEventRequest $request)
     {
         DB::beginTransaction();
 
@@ -54,16 +56,11 @@ class EventController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('events.index')->with('success', 'Event created successfully!');
+            return Inertia::render('Events/List');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('events.create')->withErrors(['error' => 'An error occurred while creating the event.']);
         }
-    }
-
-    public function show(Event $event): Response
-    {
-        return Inertia::render('Events/Show', compact('event'));
     }
 
     public function edit(Event $event): Response
@@ -71,44 +68,45 @@ class EventController extends Controller
         return Inertia::render('Events/Edit', compact('event'));
     }
 
-    public function update(StoreEventRequest $request, Event $event): RedirectResponse
+    public function update(StoreEventRequest $request, Event $event)
     {
         DB::beginTransaction();
 
         try {
             $event->update($request->validated());
             DB::commit();
-            return redirect()->route('events.index')->with('success', 'Event updated successfully!');
+            return Inertia::render('Events/List');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('events.edit', $event->id)->withErrors(['error' => 'An error occurred while updating the event.']);
         }
     }
 
-    public function destroy(Event $event): RedirectResponse
+    public function destroy(Event $event)
     {
         DB::beginTransaction();
 
         try {
             $event->delete();
             DB::commit();
-            return redirect()->route('events.index')->with('success', 'Event deleted successfully!');
+
+            return Inertia::render('Events/List');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('events.index')->withErrors(['error' => 'An error occurred while deleting the event.']);
         }
     }
 
-    public function checkSelectors(Event $event): RedirectResponse
+    public function checkSelectors(Event $event): Response
     {
-        // Implementation for checking selectors
-        return redirect()->route('events.show', $event);
+        ScrapeEvent::dispatch($event);
+        return Inertia::render('Events/List');
     }
 
-    public function runCrawler(Event $event): RedirectResponse
+    public function getEventReports(Event $event)
     {
-        // Implementation for running the crawler
-        return redirect()->route('events.show', $event);
+        $reports = $event->reports;
+        return response()->json($reports);
     }
 }
 

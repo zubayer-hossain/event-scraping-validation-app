@@ -18,12 +18,12 @@ class CreateEventReportsTable extends Migration
             $table->foreignId('event_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('description');
-            $table->date('date');
+            $table->string('date');
             $table->timestamp('processed_at')->nullable();
             $table->string('source_url');
             $table->string('base_url');
             $table->boolean('is_verified')->default(false);
-            $table->json('report')->nullable(); // Assuming this column contains an array of event source selectors
+            $table->json('report')->nullable();
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
