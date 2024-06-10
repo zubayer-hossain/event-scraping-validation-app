@@ -32,6 +32,7 @@ Follow these steps to set up the project on your local machine:
 
 
 3. **Environment Configuration**
+   
    Copy the example environment file and make the necessary configuration changes in the `.env` file.
 
    ```bash
@@ -74,7 +75,8 @@ Follow these steps to set up the project on your local machine:
 
 
 8. **Queue Configuration**
-   Ensure that your queue driver is set up correctly in the .env file:
+    
+    Ensure that your queue driver is set up correctly in the .env file:
     ```bash
     QUEUE_CONNECTION=database
     ```
