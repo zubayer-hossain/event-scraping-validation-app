@@ -2,13 +2,6 @@
 
 The "Event Scraping Validation App" is a dynamic web application developed to automate the extraction and validation of event-related data from specified websites. Leveraging Laravel's robust framework, the app is designed to periodically scrape event listings from various online sources, capturing essential details such as event names, dates, descriptions, and links. The data collected is then processed and stored in a structured format, allowing for easy access and analysis.
 
-## Requirements
-
-- PHP 8.2 or higher
-- Laravel 11
-- Composer
-- MySQL
-- Node.js
 
 ## Tech Stack
 
@@ -17,6 +10,14 @@ The "Event Scraping Validation App" is a dynamic web application developed to au
 - React.js
 - Tailwind CSS
 - MySQL
+
+## Requirements
+
+- PHP 8.2 or higher
+- Laravel 11
+- Composer
+- MySQL
+- Node.js
 
 ## Installation
 
@@ -97,3 +98,5 @@ Follow these steps to set up the project on your local machine:
 ## Running the Application
 
 Navigate to http://localhost:8000 in your web browser to view the application. If everything is set up correctly, you should see your Laravel application running.
+
+To access the application you can register as a new user or use a user email from the database. The default user password is `password`.
