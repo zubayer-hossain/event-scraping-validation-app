@@ -99,4 +99,6 @@ Follow these steps to set up the project on your local machine:
 
 Navigate to http://localhost:8000 in your web browser to view the application. If everything is set up correctly, you should see your Laravel application running.
 
+## Access the Application
+
 To access the application you can register as a new user or use a user email from the database. The default user password is `password`.
