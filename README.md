@@ -1,6 +1,7 @@
 # Event Scraping Validation App
 
 The "Event Scraping Validation App" is a dynamic web application developed to automate the extraction and validation of event-related data from specified websites. Leveraging Laravel's robust framework, the app is designed to periodically scrape event listings from various online sources, capturing essential details such as event names, dates, descriptions, and links. The data collected is then processed and stored in a structured format, allowing for easy access and analysis.
+
 ## Requirements
 
 - PHP 8.2 or higher
@@ -8,6 +9,14 @@ The "Event Scraping Validation App" is a dynamic web application developed to au
 - Composer
 - MySQL
 - Node.js
+
+## Tech Stack
+
+- Laravel 11
+- Inertia.js
+- React.js
+- Tailwind CSS
+- MySQL
 
 ## Installation
 
