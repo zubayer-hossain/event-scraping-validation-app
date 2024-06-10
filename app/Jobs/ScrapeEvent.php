@@ -19,16 +19,18 @@ class ScrapeEvent implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $event;
+    protected $createdBy;
 
-    public function __construct(Event $event)
+    public function __construct(Event $event, $createdBy)
     {
         $this->event = $event;
+        $this->createdBy = $createdBy;
     }
 
     public function handle()
     {
         $startTime = now();
-//        $this->event->update(['status' => 'scraping', 'check_start_time' => $startTime]);
+        $this->event->update(['check_start_time' => $startTime]);
 
         try {
             $client = Client::createChromeClient(base_path('drivers/chromedriver.exe'));
@@ -40,46 +42,47 @@ class ScrapeEvent implements ShouldQueue
             }
 
             $container = $crawler->filter($selectors['container']);
+            $documentSelectors = $this->event->document_selectors;
+
             Log::info("=============================");
             Log::info("Found {$container->count()} elements for selector: {$selectors['container']}");
             Log::info("=============================");
+
             if ($container->count() == 0) {
                 Log::warning("No containers found for selector: {$selectors['container']}");
                 throw new \Exception("No elements found for the specified container selector.");
             }
 
-            $reports = [];
-            $container->each(function (Crawler $node) use ($selectors, &$reports, $client) {
+            $lastIndex = $container->count() - 1;
+            $container->each(function (Crawler $node, $index) use ($selectors,$documentSelectors, &$reports, $client, $lastIndex) {
                 if ($node->filter($selectors['link'])->count() > 0 && $node->filter($selectors['title'])->count() > 0 && $node->filter($selectors['date'])->count() > 0) {
-                    Log::info("Found necessary elements within container for : {$selectors['link']}");
                     $link = $node->filter($selectors['link'])->link()->getUri();
                     $title = $node->filter($selectors['title'])->text();
                     $date = $node->filter($selectors['date'])->text();
 
-                    $detailCrawler = $client->request('GET', $link);
-                    if ($detailCrawler->filter($selectors['description'])->count() > 0) {
-                        $description = $detailCrawler->filter($selectors['description'])->text();
+                    Log::info("========================");
+                    Log::info("Link: {$link}, Title: {$title}, Date: {$date}");
+                    Log::info("========================");
 
-                        EventReport::create([
-                            'event_id' => $this->event->id,
-                            'title' => $title,
-                            'description' => $description,
-                            'date' => $date,
-                            'source_url' => $link,
-                            'base_url' => $this->event->url,
-                            'is_verified' => true,
-                            'created_by' => auth()->id(),
-                        ]);
-                    } else {
-                        Log::warning("Description not found for link: {$link}");
-                    }
+                    $eventReportData = [
+                        'event_id' => $this->event->id,
+                        'title' => $title,
+                        'date' => $date,
+                        'source_url' => $link,
+                        'base_url' => $this->event->url,
+                        'is_verified' => false,
+                        'report' => $selectors,
+                        'created_by' => $this->createdBy,
+                    ];
+                    $isLastJob = ($index === $lastIndex);
+                    ProcessEventReport::dispatch($eventReportData, $documentSelectors, $isLastJob);
                 } else {
                     Log::warning("Missing necessary elements within container for URL: {$this->event->url}");
                 }
             });
 
-            $endTime = now();
-            $this->event->update(['status' => 'completed', 'check_end_time' => $endTime]);
+            $client->quit();
+            unset($client);
         } catch (\Exception $e) {
             Log::error("Error scraping event ID {$this->event->id}: " . $e->getMessage());
             Log::info("Trace: " . $e->getTraceAsString());

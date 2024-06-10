@@ -129,141 +129,145 @@ const EventTable = ({ user }) => {
             {filteredEvents.length === 0 ? (
                 <p className="text-center pt-4">No items found</p>
             ) : (
-                 <div className="overflow-x-auto">
-                     <table className="min-w-full bg-white table-auto">
-                         <thead>
-                         <tr>
-                             <th className="py-2 text-left">Name</th>
-                             <th className="py-2 px-4 text-left">Country</th>
-                             <th className="py-2 px-4 text-left">Document</th>
-                             <th className="py-2 px-4 text-left">Last Updated</th>
-                             <th className="py-2 px-4 text-left">Enabled</th>
-                             {user.role === 'author' && (
-                                 <th className="py-2 px-4 text-left">Actions</th>
-                             )}
-                         </tr>
-                         </thead>
-                         <tbody>
-                         {filteredEvents.map((event, index) => (
-                             <tr key={event.id} className="border-b">
-                                 <td className="py-2">{event.name}</td>
-                                 <td className="py-2 px-4">{event.country}</td>
-                                 <td className="py-2 px-4">{event.document}</td>
-                                 <td className="py-2 px-4">{event.last_updated_at}</td>
-                                 <td className="py-2 px-4">
-                                     <Switch
-                                         checked={event.horizon_scanning}
-                                         onChange={() => {}}
-                                         className={`${event.horizon_scanning ? 'bg-indigo-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 items-center rounded-full`}
-                                     >
-                                         <span className="sr-only">Enable</span>
-                                         <span
-                                             className={`${event.horizon_scanning ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform bg-white rounded-full`}
-                                         />
-                                     </Switch>
-                                 </td>
-                                 {user.role === 'author' && (
-                                     <td className="py-2 px-4 relative">
-                                         {(event.status === 'pending' || event.status === 'failed') && (
-                                             <div className="relative inline-block text-left">
-                                                 <div>
-                                                     <button
-                                                         type="button"
-                                                         className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                                         id="menu-button"
-                                                         aria-expanded="true"
-                                                         aria-haspopup="true"
-                                                         onClick={() => toggleMenu(index)}
-                                                     >
-                                                         <EllipsisVerticalIcon className="h-5 w-5" />
-                                                     </button>
-                                                 </div>
-                                                 {menuOpen === index && (
-                                                     <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
-                                                         <div className="py-1" role="none">
-                                                             <button
-                                                                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-                                                                 role="menuitem"
-                                                                 tabIndex="-1"
-                                                                 onClick={() => handleCheckSelectors(event)}
-                                                             >
-                                                                 <MagnifyingGlassIcon className="h-5 w-5 mr-2"/>
-                                                                 Check Selectors
-                                                             </button>
-                                                             <button
-                                                                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-                                                                 role="menuitem"
-                                                                 tabIndex="-1"
-                                                             >
-                                                                 <ArrowPathIcon className="h-5 w-5 mr-2"/>
-                                                                 Run Crawler
-                                                             </button>
-                                                             <button
-                                                                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-                                                                 role="menuitem"
-                                                                 tabIndex="-1"
-                                                                 onClick={() => router.visit(route('events.edit', event.id))}
-                                                             >
-                                                                 <PencilSquareIcon className="h-5 w-5 mr-2"/>
-                                                                 Edit Source
-                                                             </button>
-                                                             <button
-                                                                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-                                                                 role="menuitem"
-                                                                 tabIndex="-1"
-                                                                 onClick={() => handleDelete(event)}
-                                                             >
-                                                                 <TrashIcon className="h-5 w-5 mr-2"/>
-                                                                 Remove Source
-                                                             </button>
-                                                         </div>
-                                                     </div>
-                                                 )}
-                                             </div>
-                                         )}
+                <table className="min-w-full bg-white table-auto">
+                    <thead>
+                    <tr>
+                        <th className="py-2 text-left">Name</th>
+                        <th className="py-2 px-4 text-left">Country</th>
+                        <th className="py-2 px-4 text-left">Document</th>
+                        <th className="py-2 px-4 text-left">Last Updated</th>
+                        <th className="py-2 px-4 text-left">Enabled</th>
+                        {user.role === 'author' && (
+                            <th className="py-2 px-4 text-left">Actions</th>
+                        )}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {filteredEvents.map((event, index) => (
+                        <tr key={event.id} className="border-b">
+                            <td className="py-2">{event.name}</td>
+                            <td className="py-2 px-4">{event.country}</td>
+                            <td className="py-2 px-4">{event.document}</td>
+                            <td className="py-2 px-4">{event.last_updated_at}</td>
+                            <td className="py-2 px-4">
+                                <Switch
+                                    checked={event.horizon_scanning}
+                                    onChange={() => {
+                                    }}
+                                    className={`${event.horizon_scanning ? 'bg-indigo-600'
+                                                                         : 'bg-gray-200'} relative inline-flex h-6 w-11 items-center rounded-full`}
+                                >
+                                    <span className="sr-only">Enable</span>
+                                    <span
+                                        className={`${event.horizon_scanning ? 'translate-x-6'
+                                                                             : 'translate-x-1'} inline-block h-4 w-4 transform bg-white rounded-full`}
+                                    />
+                                </Switch>
+                            </td>
+                            {user.role === 'author' && (
+                                <td className="py-2 px-4 relative">
+                                    {(event.status === 'pending' || event.status === 'failed') && (
+                                        <div className="relative inline-block text-left">
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                    id="menu-button"
+                                                    aria-expanded="true"
+                                                    aria-haspopup="true"
+                                                    onClick={() => toggleMenu(index)}
+                                                >
+                                                    <EllipsisVerticalIcon className="h-5 w-5"/>
+                                                </button>
+                                            </div>
+                                            {menuOpen === index && (
+                                                <div
+                                                    className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                                    role="menu" aria-orientation="vertical"
+                                                    aria-labelledby="menu-button" tabIndex="-1">
+                                                    <div className="py-1" role="none">
+                                                        <button
+                                                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                                                            role="menuitem"
+                                                            tabIndex="-1"
+                                                            onClick={() => handleCheckSelectors(event)}
+                                                        >
+                                                            <MagnifyingGlassIcon className="h-5 w-5 mr-2"/>
+                                                            Check Selectors
+                                                        </button>
+                                                        <button
+                                                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                                                            role="menuitem"
+                                                            tabIndex="-1"
+                                                        >
+                                                            <ArrowPathIcon className="h-5 w-5 mr-2"/>
+                                                            Run Crawler
+                                                        </button>
+                                                        <button
+                                                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                                                            role="menuitem"
+                                                            tabIndex="-1"
+                                                            onClick={() => router.visit(route('events.edit', event.id))}
+                                                        >
+                                                            <PencilSquareIcon className="h-5 w-5 mr-2"/>
+                                                            Edit Source
+                                                        </button>
+                                                        <button
+                                                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                                                            role="menuitem"
+                                                            tabIndex="-1"
+                                                            onClick={() => handleDelete(event)}
+                                                        >
+                                                            <TrashIcon className="h-5 w-5 mr-2"/>
+                                                            Remove Source
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
-                                         {event.status === 'scraping' && (
-                                             <div className="relative inline-block text-left">
-                                                 <div>
-                                                     <button
-                                                         type="button"
-                                                         className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                                         id="menu-button"
-                                                         aria-expanded="true"
-                                                         aria-haspopup="true"
-                                                     >
-                                                         <ArrowPathIcon className="h-5 w-5" />
-                                                         Checking...
-                                                     </button>
-                                                 </div>
-                                             </div>
-                                         )}
+                                    {event.status === 'scraping' && (
+                                        <div className="relative inline-block text-left">
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                    id="menu-button"
+                                                    aria-expanded="true"
+                                                    aria-haspopup="true"
+                                                >
+                                                    <ArrowPathIcon className="h-5 w-5"/>
+                                                    Checking...
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
 
-                                         {event.status === 'completed' && (
-                                             <div className="relative inline-block text-left">
-                                                 <div>
-                                                     <button
-                                                         type="button"
-                                                         className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                                         id="menu-button"
-                                                         aria-expanded="true"
-                                                         aria-haspopup="true"
-                                                         onClick={() => seeResults(event)}
-                                                     >
-                                                         <ArrowTopRightOnSquareIcon className="h-5 w-5" />
-                                                         See Results
-                                                     </button>
-                                                 </div>
-                                             </div>
-                                         )}
-                                     </td>
-                                 )}
-                             </tr>
-                         ))}
-                         </tbody>
-                     </table>
-                 </div>
-             )}
+                                    {event.status === 'completed' && (
+                                        <div className="relative inline-block text-left">
+                                            <div>
+                                                <button
+                                                    type="button"
+                                                    className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                    id="menu-button"
+                                                    aria-expanded="true"
+                                                    aria-haspopup="true"
+                                                    onClick={() => seeResults(event)}
+                                                >
+                                                    <ArrowTopRightOnSquareIcon className="h-5 w-5"/>
+                                                    See Results
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </td>
+                            )}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            )}
             <Modal
                 show={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -271,7 +275,8 @@ const EventTable = ({ user }) => {
             >
                 <div className="p-4">
                     <h2 className="text-lg font-semibold text-gray-800">Confirm Deletion</h2>
-                    <p className="text-sm text-gray-600">Are you sure you want to delete this event? This action cannot be undone.</p>
+                    <p className="text-sm text-gray-600">Are you sure you want to delete this event? This action cannot
+                        be undone.</p>
                     <div className="mt-4 flex justify-end">
                         <button
                             className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md mr-2"
@@ -307,7 +312,7 @@ const EventTable = ({ user }) => {
                                 </div>
 
                                 <h3 className="text-md font-semibold text-gray-800 mt-5">Result {currentIndex
-                                                                                            + 1} of {scrapingResults.length}</h3>
+                                                                                                 + 1} of {scrapingResults.length}</h3>
                             </div>
                             <div className="bg-gray-100 p-2 rounded-md text-sm text-gray-800">
                                 <p><strong>Link</strong> <br/> {scrapingResults[currentIndex].source_url}</p>
@@ -355,7 +360,6 @@ const EventTable = ({ user }) => {
                     </div>
                 </div>
             </Modal>
-
         </div>
     );
 };

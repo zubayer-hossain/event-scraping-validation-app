@@ -17,11 +17,17 @@ use Inertia\Response;
 
 class EventController extends Controller
 {
+    /**
+     * @return Response
+     */
     public function index(): Response
     {
         return Inertia::render('Events/List');
     }
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function list()
     {
         $user = Auth::user();
@@ -36,11 +42,18 @@ class EventController extends Controller
         return response()->json($events);
     }
 
+    /**
+     * @return Response
+     */
     public function create(): Response
     {
         return Inertia::render('Events/Create');
     }
 
+    /**
+     * @param StoreEventRequest $request
+     * @return RedirectResponse|Response
+     */
     public function store(StoreEventRequest $request)
     {
         DB::beginTransaction();
@@ -63,11 +76,20 @@ class EventController extends Controller
         }
     }
 
+    /**
+     * @param Event $event
+     * @return Response
+     */
     public function edit(Event $event): Response
     {
         return Inertia::render('Events/Edit', compact('event'));
     }
 
+    /**
+     * @param StoreEventRequest $request
+     * @param Event $event
+     * @return RedirectResponse|Response
+     */
     public function update(StoreEventRequest $request, Event $event)
     {
         DB::beginTransaction();
@@ -82,6 +104,10 @@ class EventController extends Controller
         }
     }
 
+    /**
+     * @param Event $event
+     * @return RedirectResponse|Response
+     */
     public function destroy(Event $event)
     {
         DB::beginTransaction();
@@ -97,12 +123,22 @@ class EventController extends Controller
         }
     }
 
+    /**
+     * @param Event $event
+     * @return Response
+     */
     public function checkSelectors(Event $event): Response
     {
-        ScrapeEvent::dispatch($event);
+        $event->update(['status' => 'scraping']);
+        ScrapeEvent::dispatch($event, Auth::id());
+
         return Inertia::render('Events/List');
     }
 
+    /**
+     * @param Event $event
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getEventReports(Event $event)
     {
         $reports = $event->reports;
