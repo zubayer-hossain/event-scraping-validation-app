@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\ClientEventController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\EventReportController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
